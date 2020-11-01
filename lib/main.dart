@@ -1,7 +1,7 @@
+import 'package:f_firstStep/quiz.dart';
 import 'package:flutter/material.dart';
 
-import './question.dart';
-import './answer.dart';
+import './results.dart';
 
 void main() {
   runApp(MyApp());
@@ -16,43 +16,66 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   var _questionIndex = 0;
-  void answerQuestion() {
+  var _totalScore = 0;
+
+  void answerQuestion(int score) {
+    _totalScore += score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
     print(_questionIndex);
   }
 
+  void _restartQuiz() {
+    setState(() {
+      _questionIndex = 0;
+      _totalScore = 0;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var questions = [
-      'What\'s your favorite color?',
-      'What\'s your favourite animal?',
+    const _questions = [
+      {
+        'questionText': 'What\'s your favorite color?',
+        'answers': [
+          {'Text': 'black', 'score': 10},
+          {'Text': 'white', 'score': 10},
+          {'Text': 'red', 'score': 5},
+          {'Text': 'green', 'score': 6}
+        ]
+      },
+      {
+        'questionText': 'What\'s your favorite animal?',
+        'answers': [
+          {'Text': 'rabbit', 'score': 10},
+          {'Text': 'donkey', 'score': 7},
+          {'Text': 'lion', 'score': 6},
+          {'Text': 'giraff', 'score': 5}
+        ]
+      },
+      {
+        'questionText': 'Who\'s your favorite person?',
+        'answers': [
+          {'Text': 'paul', 'score': 3},
+          {'Text': 'paul', 'score': 5},
+          {'Text': 'paul', 'score': 7},
+          {'Text': 'paul', 'score': 10}
+        ]
+      },
     ];
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
           title: Text('My First App'),
         ),
-        body: Column(
-          children: [
-            Question(
-              questions[_questionIndex],
-            ),
-            Answer(
-              selectedAnswerHandler: answerQuestion,
-              disPlayText: 'Answer1',
-            ),
-            Answer(
-              selectedAnswerHandler: answerQuestion,
-              disPlayText: 'Answer2',
-            ),
-            Answer(
-              selectedAnswerHandler: answerQuestion,
-              disPlayText: 'Answer3',
-            ),
-          ],
-        ),
+        body: _questionIndex < _questions.length
+            ? Quiz(
+                answerQuestion: answerQuestion,
+                questions: _questions,
+                questionIndex: _questionIndex,
+              )
+            : Result(_totalScore, _restartQuiz),
       ),
     );
   }
